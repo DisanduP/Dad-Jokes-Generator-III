@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Dad Jokes Generator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.15;
+            animation: float 20s infinite linear;
+            font-size: 3rem;
+        }
+
+        .shape:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .shape:nth-child(2) { top: 80%; left: 80%; animation-delay: 5s; }
+        .shape:nth-child(3) { top: 40%; left: 70%; animation-delay: 10s; }
+        .shape:nth-child(4) { top: 70%; left: 30%; animation-delay: 15s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 50px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: containerFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .title {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 700;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .emoji-container {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .main-emoji {
+            display: inline-block;
+            animation: bounce 2s infinite;
+            transition: all 0.3s ease;
+        }
+
+        .main-emoji:hover {
+            animation-play-state: paused;
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-8px); }
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: particleFloat 4s infinite ease-in-out;
+        }
+
+        .particle:nth-child(2) { top: 10%; left: -20%; animation-delay: 0.5s; }
+        .particle:nth-child(3) { top: -10%; right: -20%; animation-delay: 1s; }
+        .particle:nth-child(4) { bottom: 10%; left: -30%; animation-delay: 1.5s; }
+        .particle:nth-child(5) { bottom: -10%; right: -30%; animation-delay: 2s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        .joke-container {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .joke-text {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.8;
+            font-weight: 400;
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .joke-text.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .generate-btn.loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 15px 40px rgba(102, 126, 234, 0.8); }
+            100% { box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+        }
+
+        .surprise-btn {
+            background: linear-gradient(135deg, #f093fb, #f59e0b);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+        }
+
+        .surprise-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.6);
+        }
+
+        .rating-container {
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .rating-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .rating-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rating-btn:hover {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .rating-btn.clicked {
+            animation: ratingPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes ratingPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4) rotate(15deg); }
+            100% { transform: scale(1); }
+        }
+
+        .stats {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f093fb;
+            transition: all 0.3s ease;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .achievements {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .achievement {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .achievement.unlocked {
+            opacity: 1;
+            border-color: #10b981;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+            animation: achievementUnlock 0.8s ease;
+        }
+
+        @keyframes achievementUnlock {
+            0% { transform: scale(0.8) rotate(-10deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #ffd700;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: sparkleAnimation 1s ease-out forwards;
+        }
+
+        @keyframes sparkleAnimation {
+            0% { 
+                transform: scale(0) rotate(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(1.5) rotate(360deg) translateY(-50px); 
+                opacity: 0; 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .joke-text {
+                font-size: 1.2rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .generate-btn, .surprise-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape">🎭</div>
+        <div class="shape">😂</div>
+        <div class="shape">🎪</div>
+        <div class="shape">🎨</div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">Ultimate Dad Jokes</h1>
+        <p class="subtitle">Premium Grade-A Groaners & Legendary Laughs</p>
+        
+        <div class="emoji-container">
+            <div class="main-emoji" id="mainEmoji">👨‍👧‍👦</div>
+            <div class="particle">✨</div>
+            <div class="particle">⭐</div>
+            <div class="particle">🌟</div>
+            <div class="particle">💫</div>
+        </div>
+        
+        <div class="joke-container">
+            <p class="joke-text" id="jokeText">Ready for the ultimate dad joke experience? Click below!</p>
+        </div>
+        
+        <div class="button-container">
+            <button class="generate-btn" id="generateBtn" onclick="generateJoke()">
+                🎯 Get Epic Dad Joke
+            </button>
+            <button class="surprise-btn" onclick="surpriseMe()">
+                🎲 Surprise Me!
+            </button>
+        </div>
+        
+        <div class="rating-container" id="ratingContainer">
+            <button class="rating-btn" onclick="rateJoke('😂', 'hilarious')" title="Absolutely Hilarious!">😂</button>
+            <button class="rating-btn" onclick="rateJoke('😊', 'good')" title="Pretty Funny!">😊</button>
+            <button class="rating-btn" onclick="rateJoke('😐', 'meh')" title="Classic Dad Joke...">😐</button>
+            <button class="rating-btn" onclick="rateJoke('🙄', 'groan')" title="Eye-Roll Worthy">🙄</button>
+        </div>
+        
+        <div class="achievements" id="achievements">
+            <div class="achievement" data-achievement="first" title="Tell your first joke">🏆</div>
+            <div class="achievement" data-achievement="five" title="Tell 5 jokes">🎖️</div>
+            <div class="achievement" data-achievement="ten" title="Tell 10 jokes">🏅</div>
+            <div class="achievement" data-achievement="comedy" title="Get 5 laughs">🎭</div>
+            <div class="achievement" data-achievement="groaner" title="Get 10 groans">🤦</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item" onclick="animateNumber('totalJokes')">
+                <div class="stat-number" id="totalJokes">0</div>
+                <div class="stat-label">Epic Jokes</div>
+            </div>
+            <div class="stat-item" onclick="animateNumber('laughCount')">
+                <div class="stat-number" id="laughCount">0</div>
+                <div class="stat-label">Laughs Earned</div>
+            </div>
+            <div class="stat-item" onclick="animateNumber('groanCount')">
+                <div class="stat-number" id="groanCount">0</div>
+                <div class="stat-label">Groans Caused</div>
+            </div>
+            <div class="stat-item" onclick="animateNumber('streakCount')">
+                <div class="stat-number" id="streakCount">0</div>
+                <div class="stat-label">Best Streak</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const dadJokes = [
+            "I'm afraid for the calendar. Its days are numbered.",
+            "My wife said I should do lunges to stay in shape. That would be a big step forward.",
+            "Why don't scientists trust atoms? Because they make up everything.",
+            "I only know 25 letters of the alphabet. I don't know y.",
+            "What do you call a fake noodle? An impasta.",
+            "I used to hate facial hair, but then it grew on me.",
+            "I decided to sell my vacuum cleaner. It was just gathering dust.",
+            "What do you call a fish wearing a bowtie? Sofishticated.",
+            "I invented a new word: Plagiarism.",
+            "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them.",
+            "Why don't eggs tell jokes? They'd crack each other up.",
+            "I used to be a personal trainer. Then I gave my too weak notice.",
+            "What do you call a dinosaur that crashes his car? Tyrannosaurus Wrecks.",
+            "I'm reading a book about anti-gravity. It's impossible to put down!",
+            "Did you hear about the claustrophobic astronaut? He just needed some space.",
+            "Why don't skeletons fight each other? They don't have the guts.",
+            "What do you call a bear with no teeth? A gummy bear!",
+            "I would avoid the sushi if I were you. It's a little fishy.",
+            "Want to hear a joke about construction? I'm still working on it.",
+            "What did the ocean say to the beach? Nothing, it just waved.",
+            "Why do fathers take an extra pair of socks when they go golfing? In case they get a hole in one!",
+            "Singing in the shower is fun until you get soap in your mouth. Then it's a soap opera.",
+            "What do you call a factory that makes okay products? A satisfactory.",
+            "Dear Math, grow up and solve your own problems.",
+            "What did the janitor say when he jumped out of the closet? Supplies!",
+            "Have you heard about the chocolate record player? It sounds pretty sweet.",
+            "What did one wall say to the other wall? I'll meet you at the corner.",
+            "I don't trust stairs. They're always up to something.",
+            "What do you call a group of disorganized cats? A cat-astrophe.",
+            "Why did the scarecrow win an award? He was outstanding in his field.",
+            "I made a pencil with two erasers. It was pointless.",
+            "How do you organize a space party? You planet.",
+            "What's the best thing about Switzerland? I don't know, but the flag is a big plus.",
+            "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+            "What do you call a sleeping bull? A bulldozer!",
+            "Why did the coffee file a police report? It got mugged.",
+            "How does a penguin build its house? Igloos it together.",
+            "Why don't elephants use computers? They're afraid of the mouse!",
+            "What do you call a can opener that doesn't work? A can't opener!",
+            "Why did the cookie go to the doctor? Because it felt crumbly!",
+            "What do you call a pile of cats? A meowtain!",
+            "I'm on a seafood diet. I see food and I eat it.",
+            "Why did the bicycle fall over? It was two-tired!",
+            "What do you call a dog magician? A labracadabrador!",
+            "I used to be addicted to soap, but I'm clean now.",
+            "What did the grape say when it got stepped on? Nothing, it just let out a little wine!",
+            "Why did the tomato turn red? Because it saw the salad dressing!",
+            "What do you call a fake stone in Ireland? A sham-rock!"
+        ];
+
+        const emojiRotation = ['👨‍👧‍👦', '🤵', '👔', '🕺', '🤡', '🎭', '👑', '🎪'];
+        const surpriseJokes = [
+            "Why did the dad joke cross the road? To get to the punchline!",
+            "What's a dad's favorite type of music? Pop music!",
+            "Why are dad jokes so cheesy? Because they're grate!",
+            "What do you call a dad who falls through the ice? A popsicle!",
+            "Why do dads tell dad jokes? Because grandpa jokes are too old!"
+        ];
+
+        let stats = {
+            totalJokes: 0,
+            laughs: 0,
+            groans: 0,
+            streak: 0,
+            bestStreak: 0
+        };
+
+        let currentJokeIndex = -1;
+        let isAnimating = false;
+
+        function generateJoke() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const jokeText = document.getElementById('jokeText');
+            const generateBtn = document.getElementById('generateBtn');
+            const ratingContainer = document.getElementById('ratingContainer');
+            const mainEmoji = document.getElementById('mainEmoji');
+            
+            generateBtn.classList.add('loading');
+            generateBtn.textContent = '🎪 Crafting Magic...';
+            
+            jokeText.classList.remove('show');
+            ratingContainer.classList.remove('show');
+            
+            const randomEmoji = emojiRotation[Math.floor(Math.random() * emojiRotation.length)];
+            mainEmoji.textContent = randomEmoji;
+
+            setTimeout(() => {
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * dadJokes.length);
+                } while (randomIndex === currentJokeIndex && dadJokes.length > 1);
+                
+                currentJokeIndex = randomIndex;
+                
+                jokeText.textContent = dadJokes[randomIndex];
+                jokeText.classList.add('show');
+                
+                stats.totalJokes++;
+                updateStatsDisplay();
+                checkAchievements();
+                
+                generateBtn.classList.remove('loading');
+                generateBtn.textContent = '🎯 Get Another Epic Joke';
+                
+                setTimeout(() => {
+                    ratingContainer.classList.add('show');
+                    isAnimating = false;
+                }, 500);
+                
+            }, 1500);
+        }
+
+        function surpriseMe() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const jokeText = document.getElementById('jokeText');
+            const ratingContainer = document.getElementById('ratingContainer');
+            
+            jokeText.classList.remove('show');
+            ratingContainer.classList.remove('show');
+
+            createSparkles();
+
+            setTimeout(() => {
+                const randomJoke = surpriseJokes[Math.floor(Math.random() * surpriseJokes.length)];
+                jokeText.textContent = randomJoke;
+                jokeText.classList.add('show');
+                
+                stats.totalJokes++;
+                updateStatsDisplay();
+                checkAchievements();
+                
+                setTimeout(() => {
+                    ratingContainer.classList.add('show');
+                    isAnimating = false;
+                }, 500);
+                
+            }, 1000);
+        }
+
+        function rateJoke(reaction, type) {
+            const ratingBtn = event.target;
+            ratingBtn.classList.add('clicked');
+            
+            if (type === 'hilarious' || type === 'good') {
+                stats.laughs++;
+                stats.streak++;
+                showNotification('Great choice! 😄');
+            } else {
+                stats.groans++;
+                stats.streak++;
+                showNotification('Classic dad joke reaction! 🙄');
+            }
+            
+            if (stats.streak > stats.bestStreak) {
+                stats.bestStreak = stats.streak;
+            }
+            
+            updateStatsDisplay();
+            checkAchievements();
+            
+            setTimeout(() => {
+                ratingBtn.classList.remove('clicked');
+            }, 600);
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('totalJokes').textContent = stats.totalJokes;
+            document.getElementById('laughCount').textContent = stats.laughs;
+            document.getElementById('groanCount').textContent = stats.groans;
+            document.getElementById('streakCount').textContent = stats.bestStreak;
+        }
+
+        function checkAchievements() {
+            if (stats.totalJokes >= 1) unlockAchievement('first');
+            if (stats.totalJokes >= 5) unlockAchievement('five');
+            if (stats.totalJokes >= 10) unlockAchievement('ten');
+            if (stats.laughs >= 5) unlockAchievement('comedy');
+            if (stats.groans >= 10) unlockAchievement('groaner');
+        }
+
+        function unlockAchievement(type) {
+            const achievement = document.querySelector(`[data-achievement="${type}"]`);
+            if (!achievement.classList.contains('unlocked')) {
+                achievement.classList.add('unlocked');
+                showNotification('🎉 Achievement Unlocked!');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function animateNumber(elementId) {
+            const element = document.getElementById(elementId);
+            element.style.transform = 'scale(1.2) rotate(5deg)';
+            element.style.color = '#ffd700';
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1) rotate(0deg)';
+                element.style.color = '';
+            }, 300);
+        }
+
+        function createSparkles() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 15; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 0.5 + 's';
+                container.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1000);
+            }
+        }
+
+        // Initialize with first joke
+        setTimeout(generateJoke, 1000);
+    </script>
+</body>
+</html>
